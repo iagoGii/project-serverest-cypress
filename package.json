@@ -1,0 +1,29 @@
+{
+  "name": "project-serverest-cypress",
+  "version": "1.0.0",
+  "description": "Projeto de automação Cypress para testes de frontend e API do Serverest",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:run:frontend": "cypress run --spec 'cypress/e2e/frontend/**/*.cy.js'",
+    "cypress:run:api": "cypress run --spec 'cypress/e2e/api/**/*.cy.js'",
+    "cypress:open:api": "cypress open --config specPattern='cypress/e2e/api/**/*.cy.js'",
+    "cypress:open:frontend": "cypress open --config specPattern='cypress/e2e/frontend/**/*.cy.js'",
+    "test": "cypress run"
+  },
+  "keywords": [
+    "cypress",
+    "automation",
+    "testing",
+    "e2e",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^14.5.0",
+    "cypress-network-idle": "^1.0.0",
+    "cypress-plugin-api": "^2.11.2"
+  }
+}

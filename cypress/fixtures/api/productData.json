@@ -1,0 +1,23 @@
+{
+  "validProduct": {
+    "nome": "Produto Teste API",
+    "preco": 100,
+    "descricao": "Produto criado via API para testes",
+    "quantidade": 10
+  },
+  "invalidProduct": {
+    "nome": "",
+    "preco": -10,
+    "descricao": "Produto com dados inválidos",
+    "quantidade": 0
+  },
+  "updateProduct": {
+    "nome": "Produto Atualizado",
+    "preco": 150,
+    "descricao": "Produto atualizado via API",
+    "quantidade": 20
+  },
+  "searchProduct": {
+    "searchTerm": "Logitech"
+  }
+} 
