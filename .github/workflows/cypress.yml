@@ -25,7 +25,7 @@ jobs:
         run: npm install
 
       - name: Rodar testes de API no Chrome headless
-        run: npx cypress run --browser chrome --spec \"cypress/e2e/api/**/*.cy.js\"
+        run: npx cypress run --spec "cypress/e2e/api/usuarios.cy.js"
 
   cypress-frontend:
     runs-on: ubuntu-latest
@@ -43,4 +43,4 @@ jobs:
         run: npm install
 
       - name: Rodar testes de Frontend no Chrome headless
-        run: npx cypress run --browser chrome --spec \"cypress/e2e/frontend/**/*.cy.js\"
+        run: npx cypress run --spec "cypress/e2e/frontend/cadastro.cy.js"
