@@ -6,6 +6,7 @@ Este projeto contém testes automatizados para o frontend e API da aplicação S
 
 - **Frontend**: https://front.serverest.dev/login
 - **API**: https://serverest.dev/
+- **Workflows**: cypress.yml
 - **Framework**: Cypress
 - **Linguagem**: JavaScript
 
@@ -13,6 +14,7 @@ Este projeto contém testes automatizados para o frontend e API da aplicação S
 
 ```
 project-serverest-cypress/
+├── github/workflows/cypress.yml
 ├── cypress/
 │   ├── e2e/
 │   │   ├── api/           # Testes de API (usuarios.cy.js)
@@ -33,6 +35,20 @@ project-serverest-cypress/
 - Node.js (versão 14 ou superior)
 - npm ou yarn
 
+## ⚙️ Integração Contínua (CI) com GitHub Actions
+
+Este projeto possui um workflow automatizado no GitHub Actions para rodar todos os testes a cada push ou pull request.
+
+### O que o workflow faz?
+- Instala as dependências do projeto
+- Cria o arquivo `.env` com as URLs necessárias
+- Executa os testes de API primeiro
+- Após sucesso, executa os testes de frontend
+- Roda tudo no Chrome headless
+- Garante que o código está sempre validado automaticamente
+
+### Arquivo do workflow está em: (`.github/workflows/cypress.yml`):
+---
 ## ⚙️ Instalação
 
 1. Clone o repositório:
