@@ -1,67 +1,62 @@
-describe('Testes de Cadastro - Frontend Serverest', () => {
+import { faker } from '@faker-js/faker/locale/pt_BR'
+import 'cypress-file-upload';
+
+describe('Testes de Cadastro, Login e Cadastro de Produtos - Frontend Serverest', () => {
+  let nome, email, senha;
+
   beforeEach(() => {
-    // Visita a página de cadastro antes de cada teste
-    cy.visit('https://front.serverest.dev/cadastrarusuarios')
-  })
+    cy.visitCadastro();
+  });
 
   it('Deve cadastrar um novo usuário com sucesso', () => {
-    // Gera dados únicos para o teste
-    const timestamp = Date.now()
-    const email = `${timestamp}@teste.com`
-    const nome = `${timestamp}`
 
-    // Preenche o formulário de cadastro
-    cy.get('[data-testid="nome"]').type(nome)
-    cy.get('[data-testid="email"]').type(email)
-    cy.get('[data-testid="password"]').type('senha123')
-    cy.get('[data-testid="checkbox"]').check()
-    
-    // Clica no botão de cadastrar
-    cy.get('[data-testid="cadastrar"]').click()
-    
-    // Verifica se a mensagem de sucesso é exibida
-    cy.get('[data-testid="alert"]').should('be.visible')
-    cy.get('[data-testid="alert"]').should('contain', 'Cadastro realizado com sucesso')
-  })
+    nome = faker.person.fullName();
+    email = faker.internet.email({ firstName: nome.split(' ')[0] });
+    senha = faker.internet.password({ length: 8, pattern: /[A-Za-z0-9!@#$%^&*]/ });
 
-  it('Deve validar email já cadastrado', () => {
-    // Tenta cadastrar com email já existente
-    cy.get('[data-testid="nome"]').type('Usuário Duplicado')
-    cy.get('[data-testid="email"]').type('fulano@qa.com') // Email já cadastrado
-    cy.get('[data-testid="password"]').type('senha123')
-    cy.get('[data-testid="checkbox"]').check()
-    
-    // Clica no botão de cadastrar
-    cy.get('[data-testid="cadastrar"]').click()
-    
-    // Verifica se a mensagem de erro é exibida
-    cy.get('[data-testid="alert"]').should('be.visible')
-    cy.get('[data-testid="alert"]').should('contain', 'Este email já está sendo usado')
-  })
+    cy.Cadastrar();
+    cy.NomeUser(nome);
+    cy.EmailUser(email);
+    cy.PasswordUser(senha);
+    cy.CheckboxUser();
+    cy.CadastrarUser();
 
-  it('Deve validar campos obrigatórios', () => {
-    // Tenta cadastrar sem preencher campos obrigatórios
-    cy.get('[data-testid="cadastrar"]').click()
+    cy.contains('Cadastro realizado com sucesso').should('be.visible');
+    cy.delayBetweenTests();
+  });
 
-    cy.get('[data-dismiss="alert"]').should('contain', 'Nome não pode ficar em branco')
-    cy.get('[data-dismiss="alert"]').should('contain', 'Email não pode ficar em branco')
-    cy.get('[data-dismiss="alert"]').should('contain', 'Senha não pode ficar em branco')
-    
-    // Verifica se permanece na página de cadastro
-    cy.url().should('include', '/cadastrarusuarios')
-  })
+  it('Não deve permitir cadastro com email já existente', () => {
 
-  it('Deve validar formato de email inválido', () => {
-    // Preenche com email inválido
-    cy.get('[data-testid="nome"]').type('Usuário Teste')
-    cy.get('[data-testid="email"]').type('emailinvalido')
-    cy.get('[data-testid="password"]').type('senha123')
-    cy.get('[data-testid="checkbox"]').check()
-    
-    // Clica no botão de cadastrar
-    cy.get('[data-testid="cadastrar"]').click()
-    
-    // Verifica se permanece na página de cadastro
-    cy.url().should('include', '/cadastrarusuarios')
-  })
-}) 
+    cy.Cadastrar();
+    cy.NomeUser(nome);
+    cy.EmailUser(email);
+    cy.PasswordUser(senha);
+    cy.CheckboxUser();
+    cy.CadastrarUser();
+
+    cy.contains('Este email já está sendo usado').should('be.visible');
+    cy.delayBetweenTests();
+  });
+
+  it('Não deve permitir cadastro sem preencher campos obrigatórios', () => {
+    cy.Cadastrar();
+    cy.CadastrarUser();
+  
+    cy.contains('Nome é obrigatório').should('be.visible');
+    cy.contains('Email é obrigatório').should('be.visible');
+    cy.contains('Password é obrigatório').should('be.visible');
+    cy.delayBetweenTests();
+  });
+
+  it('Deve fazer login com sucesso usando usuário cadastrado e cadastrar um produto', () => {
+    cy.visit(`${Cypress.env('frontendUrl')}/login`);
+
+    cy.EmailUser(email);
+    cy.get('[data-testid="senha"]').type(senha).should('be.visible');
+    cy.get('[data-testid="entrar"]').click();
+    cy.delayBetweenTests();
+
+    cy.CadastrarProduto();
+  });
+
+});

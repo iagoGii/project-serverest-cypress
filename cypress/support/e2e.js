@@ -16,3 +16,7 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 import 'cypress-plugin-api'
+
+beforeEach(() => {
+  cy.wait(1000);
+});

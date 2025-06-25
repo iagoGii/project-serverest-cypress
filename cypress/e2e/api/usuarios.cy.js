@@ -1,157 +1,118 @@
-describe('Testes de API - Usuários', () => {
-  const baseUrl = 'https://serverest.dev'
-  let userId
+import UsuarioApi from "../../pages/api/UsuarioApi";
 
-  it('Deve listar todos os usuários', () => {
-    cy.request({
-      method: 'GET',
-      url: `${baseUrl}/usuarios`,
-      failOnStatusCode: false
+describe("Usuários - API Serverest", () => {
+  let userId = null;
+  let usuarioCadastro, usuarioAtualizacao;
+
+  it("Deve cadastrar um novo usuário e salvar o _id", () => {
+    usuarioCadastro = UsuarioApi.gerarUsuarioCadastro();
+
+    cy.api({
+      method: "POST",
+      url: "https://serverest.dev/usuarios",
+      body: usuarioCadastro,
     }).then((response) => {
-      expect(response.status).to.eq(200)
-      expect(response.body).to.have.property('usuarios')
-      expect(response.body.usuarios).to.be.an('array')
-    })
-  })
+      expect(response.status).to.eq(201);
+      expect(response.body).to.have.property(
+        "message",
+        "Cadastro realizado com sucesso"
+      );
+      userId = response.body._id;
+    });
+  });
 
-  it('Deve criar um novo usuário', () => {
-    const timestamp = Date.now()
-    const userData = {
-      nome: `Usuário Teste API ${timestamp}`,
-      email: `usuario${timestamp}@api.com`,
-      password: 'senha123',
-      administrador: 'true'
-    }
+  it("Deve buscar o usuário cadastrado pelo _id", () => {
+    cy.api({
+      method: "GET",
+      url: `https://serverest.dev/usuarios/${userId}`,
+      headers: { accept: "application/json" },
+    }).then((getResponse) => {
+      expect(getResponse.status).to.eq(200);
+      expect(getResponse.body).to.have.property("nome", usuarioCadastro.nome);
+      expect(getResponse.body).to.have.property("email", usuarioCadastro.email);
+    });
+  });
 
-    cy.request({
-      method: 'POST',
-      url: `${baseUrl}/usuarios`,
-      body: userData,
-      failOnStatusCode: false
+  it("Deve atualizar o usuário cadastrado com sucesso (PUT)", () => {
+    usuarioAtualizacao = UsuarioApi.gerarUsuarioAtualizacao();
+
+    cy.api({
+      method: "PUT",
+      url: `https://serverest.dev/usuarios/${userId}`,
+      body: usuarioAtualizacao,
     }).then((response) => {
-      expect(response.status).to.eq(201)
-      expect(response.body).to.have.property('message', 'Cadastro realizado com sucesso')
-      expect(response.body).to.have.property('_id')
-      userId = response.body._id
-    })
-  })
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.property(
+        "message",
+        "Registro alterado com sucesso"
+      );
+    });
+  });
 
-  it('Deve buscar um usuário específico por ID', () => {
-    // Primeiro cria um usuário
-    const timestamp = Date.now()
-    const userData = {
-      nome: `Usuário Busca ${timestamp}`,
-      email: `busca${timestamp}@api.com`,
-      password: 'senha123',
-      administrador: 'true'
-    }
-
-    cy.request({
-      method: 'POST',
-      url: `${baseUrl}/usuarios`,
-      body: userData,
-      failOnStatusCode: false
-    }).then((createResponse) => {
-      const createdUserId = createResponse.body._id
-      
-      // Busca o usuário criado
-      cy.request({
-        method: 'GET',
-        url: `${baseUrl}/usuarios/${createdUserId}`,
-        failOnStatusCode: false
-      }).then((getResponse) => {
-        expect(getResponse.status).to.eq(200)
-        expect(getResponse.body).to.have.property('nome', userData.nome)
-        expect(getResponse.body).to.have.property('email', userData.email)
-      })
-    })
-  })
-
-  it('Deve atualizar um usuário existente', () => {
-    // Primeiro cria um usuário
-    const timestamp = Date.now()
-    const userData = {
-      nome: `Usuário Atualizar ${timestamp}`,
-      email: `atualizar${timestamp}@api.com`,
-      password: 'senha123',
-      administrador: 'true'
-    }
-
-    cy.request({
-      method: 'POST',
-      url: `${baseUrl}/usuarios`,
-      body: userData,
-      failOnStatusCode: false
-    }).then((createResponse) => {
-      const createdUserId = createResponse.body._id
-      
-      // Dados para atualização
-      const updateData = {
-        nome: `Usuário Atualizado ${timestamp}`,
-        email: `atualizado${timestamp}@api.com`,
-        password: 'novaSenha123',
-        administrador: 'false'
-      }
-
-      // Atualiza o usuário
-      cy.request({
-        method: 'PUT',
-        url: `${baseUrl}/usuarios/${createdUserId}`,
-        body: updateData,
-        failOnStatusCode: false
-      }).then((updateResponse) => {
-        expect(updateResponse.status).to.eq(200)
-        expect(updateResponse.body).to.have.property('message', 'Registro alterado com sucesso')
-      })
-    })
-  })
-
-  it('Deve excluir um usuário', () => {
-    // Primeiro cria um usuário
-    const timestamp = Date.now()
-    const userData = {
-      nome: `Usuário Excluir ${timestamp}`,
-      email: `excluir${timestamp}@api.com`,
-      password: 'senha123',
-      administrador: 'true'
-    }
-
-    cy.request({
-      method: 'POST',
-      url: `${baseUrl}/usuarios`,
-      body: userData,
-      failOnStatusCode: false
-    }).then((createResponse) => {
-      const createdUserId = createResponse.body._id
-      
-      // Exclui o usuário
-      cy.request({
-        method: 'DELETE',
-        url: `${baseUrl}/usuarios/${createdUserId}`,
-        failOnStatusCode: false
-      }).then((deleteResponse) => {
-        expect(deleteResponse.status).to.eq(200)
-        expect(deleteResponse.body).to.have.property('message', 'Registro excluído com sucesso')
-      })
-    })
-  })
-
-  it('Deve validar criação de usuário com email duplicado', () => {
-    const userData = {
-      nome: 'Usuário Duplicado',
-      email: 'fulano@qa.com', // Email já existente
-      password: 'senha123',
-      administrador: 'true'
-    }
-
-    cy.request({
-      method: 'POST',
-      url: `${baseUrl}/usuarios`,
-      body: userData,
-      failOnStatusCode: false
+  it("Deve deletar o usuário cadastrado com sucesso (DELETE)", () => {
+    cy.api({
+      method: "DELETE",
+      url: `https://serverest.dev/usuarios/${userId}`,
+      headers: { accept: "application/json" },
     }).then((response) => {
-      expect(response.status).to.eq(400)
-      expect(response.body).to.have.property('message', 'Este email já está sendo usado')
-    })
-  })
-}) 
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.property(
+        "message",
+        "Registro excluído com sucesso"
+      );
+    });
+  });
+
+  it("Não deve permitir cadastro com email já existente", () => {
+    const usuario = UsuarioApi.gerarUsuarioCadastro();
+
+    cy.api({
+      method: "POST",
+      url: "https://serverest.dev/usuarios",
+      body: usuario,
+    }).then((response) => {
+      expect(response.status).to.eq(201);
+
+      cy.api({
+        method: "POST",
+        url: "https://serverest.dev/usuarios",
+        body: usuario,
+        failOnStatusCode: false,
+      }).then((res) => {
+        expect(res.status).to.eq(400);
+        expect(res.body).to.have.property(
+          "message",
+          "Este email já está sendo usado"
+        );
+      });
+    });
+  });
+
+  it("Não deve permitir cadastro sem preencher campos obrigatórios", () => {
+    const usuarioVazio = UsuarioApi.gerarUsuarioCamposVazios();
+    cy.api({
+      method: "POST",
+      url: "https://serverest.dev/usuarios",
+      body: usuarioVazio,
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(400);
+      expect(response.body).to.have.property("nome");
+      expect(response.body).to.have.property("email");
+      expect(response.body).to.have.property("password");
+    });
+  });
+
+  it("Não deve permitir cadastro com email inválido", () => {
+    const usuarioInvalido = UsuarioApi.gerarUsuarioEmailInvalido();
+    cy.api({
+      method: "POST",
+      url: "https://serverest.dev/usuarios",
+      body: usuarioInvalido,
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(400);
+      expect(response.body).to.have.property("email");
+    });
+  });
+});

@@ -10,7 +10,8 @@
     "cypress:run:api": "cypress run --spec 'cypress/e2e/api/**/*.cy.js'",
     "cypress:open:api": "cypress open --config specPattern='cypress/e2e/api/**/*.cy.js'",
     "cypress:open:frontend": "cypress open --config specPattern='cypress/e2e/frontend/**/*.cy.js'",
-    "test": "cypress run"
+    "test": "cypress run",
+    "cy:chrome": "cypress run --browser chrome"
   },
   "keywords": [
     "cypress",
@@ -22,8 +23,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
     "cypress": "^14.5.0",
+    "cypress-file-upload": "^5.0.8",
     "cypress-network-idle": "^1.0.0",
-    "cypress-plugin-api": "^2.11.2"
+    "cypress-plugin-api": "^2.11.2",
+    "dotenv": "^16.5.0"
   }
 }
