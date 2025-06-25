@@ -1,0 +1,45 @@
+name: Cypress Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+
+jobs:
+  cypress-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Rodar testes de API no Chrome headless
+        run: npx cypress run --browser chrome --spec \"cypress/e2e/api/**/*.cy.js\"
+
+  cypress-frontend:
+    runs-on: ubuntu-latest
+    needs: cypress-api
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Rodar testes de Frontend no Chrome headless
+        run: npx cypress run --browser chrome --spec \"cypress/e2e/frontend/**/*.cy.js\"
