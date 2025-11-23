@@ -29,7 +29,6 @@ Cypress.Commands.add("CadastrarUser", () => {
 });
 
 Cypress.Commands.add("delayBetweenTests", () => {
-  cy.wait(1000);
 });
 
 Cypress.Commands.add("CadastrarProduto", () => {

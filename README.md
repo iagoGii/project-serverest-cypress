@@ -139,7 +139,7 @@ npm install
 ## 🚀 Melhorias Implementadas
 
 ### 1. Configuração de Ambiente
-- **Arquivo `.env`**: Centraliza todas as URLs e configurações do ambiente usando dotenv
+- **Arquivo `.env.example`**: Centraliza todas as URLs e configurações do ambiente usando dotenv, altere o arquivo para rodar os testes deixando somente o .env
 - **Configuração do Cypress**: Timeouts otimizados e configurações de retry
 - **Plugin dotenv**: Carregamento automático das variáveis de ambiente
 

@@ -2,6 +2,10 @@ const { defineConfig } = require("cypress");
 require('dotenv').config();
 
 module.exports = defineConfig({
+  defaultCommandTimeout: 10000,
+  pageLoadTimeout: 60000,
+  requestTimeout: 15000,
+  responseTimeout: 15000,
   e2e: {
     setupNodeEvents(on, config) {},
     viewportWidth: 1920,
